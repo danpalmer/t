@@ -6,13 +6,7 @@ def make_exe(dist):
     policy = dist.make_python_packaging_policy()
 
     python_config = dist.make_python_interpreter_config()
-
-    # Work around https://github.com/indygreg/PyOxidizer/issues/307
-    # This hack causes sys.argv[0] to be set to something reasonable, necessary
-    # for most CLIs to work.
-    python_config.run_command = "import t.__main__"
-    # Once fixed can probably be simplified to this, equivalent of python -m t
-    # python_config.run_module = "t"
+    python_config.run_command = """import t; t.main()"""
 
     exe = dist.to_python_executable(
         name="t",
@@ -26,13 +20,10 @@ def make_exe(dist):
     )
 
     exe.add_python_resources(exe.pip_install(["-r", "requirements/app.txt"]))
-
-    exe.add_python_resources(exe.read_package_root(
-       path=".",
-       packages=["t"],
-    ))
+    exe.add_python_resources(exe.setup_py_install(package_path="."))
 
     return exe
+
 
 def make_embedded_resources(exe):
     return exe.to_embedded_resources()

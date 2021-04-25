@@ -4,11 +4,11 @@ import pkgutil
 import click
 
 from . import scripts
-from .version import VERSION
+from .__version__ import VERSION
 
 
 @click.group(name="t")
-@click.version_option(str(VERSION), "-v", "--version")
+@click.version_option(VERSION, "-v", "--version")
 @click.help_option("-h", "--help")
 def cli():
     """Interface to Thread's systems and infrastructure."""
