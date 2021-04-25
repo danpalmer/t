@@ -11,7 +11,7 @@ from .__version__ import VERSION
 @click.version_option(VERSION, "-v", "--version")
 @click.help_option("-h", "--help")
 def cli():
-    """Interface to Thread's systems and infrastructure."""
+    """Interface to Thread's systems and processes."""
     pass
 
 
