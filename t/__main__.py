@@ -1,3 +1,4 @@
-from .cli import hello
+from . import autodiscover, cli
 
-hello()
+autodiscover()
+cli()

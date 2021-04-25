@@ -1,10 +1,20 @@
+import importlib
+import pkgutil
+
 import click
 
+from . import scripts
+from .version import VERSION
 
-@click.command()
-@click.option("--count", default=1, help="Number of greetings.")
-@click.option("--name", prompt="Your name", help="The person to greet.")
-def hello(count, name):
-    """Simple program that greets NAME for a total of COUNT times."""
-    for _ in range(count):
-        click.echo(f"Hello {name}!")
+
+@click.group(name="t")
+@click.version_option(str(VERSION), "-v", "--version")
+@click.help_option("-h", "--help")
+def cli():
+    """Interface to Thread's systems and infrastructure."""
+    pass
+
+
+def autodiscover():
+    for _, name, _ in pkgutil.walk_packages(scripts.__path__):
+        importlib.import_module(f"{scripts.__name__}.{name}")
