@@ -23,7 +23,7 @@ jobs:
         uses: actions/setup-python@v2.2.2
         with:
           # See https://github.com/indygreg/python-build-standalone/releases
-          python-version: 3.9.4
+          python-version: 3.8.9
       - uses: actions/cache@v2
         with:
           path: ~/.cache/pip
