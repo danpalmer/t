@@ -24,6 +24,8 @@ jobs:
         with:
           # See https://github.com/indygreg/python-build-standalone/releases
           python-version: 3.9.4
+      - name: Install PyOxidizer
+        run: cargo install --git https://github.com/indygreg/PyOxidizer.git --branch main pyoxidizer
       - name: Build
         run: VERSION=$GITHUB_RUN_NUMBER pyoxidizer build --release
       - name: Upload build
