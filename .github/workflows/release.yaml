@@ -2,7 +2,7 @@ name: Release
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   build-linux:
@@ -35,6 +35,8 @@ jobs:
           retention-days: 1
   release:
     runs-on: ubuntu-latest
+    needs:
+      - build-linux
     steps:
       - name: Download linux build
         uses: actions/download-artifact@v2.0.9
