@@ -50,11 +50,16 @@ jobs:
         uses: actions/download-artifact@v2.0.9
         with:
           name: "linux-x86_64-v${{ env.GITHUB_RUN_NUMBER }}"
+      - name: Tag release
+        run: |
+          git tag $GITHUB_RUN_NUMBER
+          git push --tags
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release ${{ env.GITHUB_RUN_NUMBER }}
           prerelease: true
+          tag: v${{ env.GITHUB_RUN_NUMBER }}
           files: |
             linux-x86_64-v${{ env.GITHUB_RUN_NUMBER }}
         env:
