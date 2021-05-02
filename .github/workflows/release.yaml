@@ -67,13 +67,14 @@ jobs:
         uses: actions/download-artifact@v2.0.9
         with:
           name: linux-x86_64
+      - name: Zip Releases
+        run: |
+          ls -alh
+          tar -czvf linux-x86_64.tar.gz linux-x86_64
       - name: Tag release
         run: |
           git tag v${{ github.run_number }}
           git push --tags
-      - name: Zip Releases
-        run: |
-          tar -czvf linux-x86_64.tar.gz linux-x86_64
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
