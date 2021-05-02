@@ -73,6 +73,7 @@ jobs:
         uses: actions/download-artifact@v2.0.9
         with:
           name: linux-x86_64
+          path: linux-x86_64
       - name: Zip Releases
         run: |
           ls -alh
