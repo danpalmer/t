@@ -21,10 +21,6 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v1.2.0
-        with:
-          key: cache-v1
       - name: Set up Python
         uses: actions/setup-python@v2.2.2
         with:
@@ -32,11 +28,20 @@ jobs:
           # for the tool inside the Rust container. Must be a version available
           # at <https://github.com/indygreg/python-build-standalone/releases>.
           python-version: 3.8.9
+      - name: Rust cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/
+            target
+          key: ${{ runner.os }}-cargo-1
+          restore-keys: |
+            ${{ runner.os }}-cargo-
       - name: Python cache
         uses: actions/cache@v2
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-1-${{ hashFiles('requirements/*.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Install PyOxidizer
