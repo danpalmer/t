@@ -32,7 +32,8 @@ jobs:
           # for the tool inside the Rust container. Must be a version available
           # at <https://github.com/indygreg/python-build-standalone/releases>.
           python-version: 3.8.9
-      - uses: actions/cache@v2
+      - name: Python cache
+        uses: actions/cache@v2
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
