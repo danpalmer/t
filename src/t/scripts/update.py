@@ -100,7 +100,7 @@ def get_available_releases():
 
 def get_update(releases):
     latest_release = releases[0]
-    new_version = int(latest_release.tag_name)
+    new_version = int(latest_release.tag_name[1:])
 
     try:
         current_version = int(VERSION)
@@ -114,23 +114,23 @@ def get_update(releases):
 
 
 def get_asset(release):
-    rust_triple = get_rust_triple()
+    rust_triple = get_platform_name()
     try:
-        return next(x for x in release.assets if x.name.endswith(rust_triple))
+        return next(x for x in release.assets if x.name.startswith(rust_triple))
     except StopIteration:
         raise UnsupportedPlatform(
-            f"No compatible asset found on release {release} "
+            f"No compatible asset found on release '{release.name}' "
             f"for platform {rust_triple}",
         )
 
 
-def get_rust_triple():
+def get_platform_name():
     if sys.platform.startswith("darwin"):
         if platform.machine() == "arm64":
-            return "arm64-apple-darwin"
-        return "x86_64-apple-darwin"
+            return "macos-arm64"
+        return "macos-x86_64"
     if sys.platform.startswith("linux"):
-        return "x86_64-unknown-linux-gnu"
+        return "linux-x86_64"
 
 
 class UnsupportedPlatform(ValueError):
