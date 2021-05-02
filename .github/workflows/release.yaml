@@ -85,8 +85,8 @@ jobs:
       - name: Zip Releases
         run: |
           ls -alh
-          tar -czvf linux-x86_64.tar.gz linux-x86_64
-          tar -czvf macos-x86_64.tar.gz macos-x86_64
+          tar -czvf linux-x86_64.tar.gz linux-x86_64/t
+          tar -czvf macos-x86_64.tar.gz macos-x86_64/t
       - name: Tag release
         run: |
           git tag v${{ github.run_number }}
