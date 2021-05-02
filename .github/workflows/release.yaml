@@ -4,15 +4,16 @@ on:
   push:
     branches: [main]
 
+env:
+  VERSION: "v${{ env.GITHUB_RUN_NUMBER }}"
+
 jobs:
   build:
-    env:
-      VERSION: v${{ env.GITHUB_RUN_NUMBER }}
     strategy:
       matrix:
         include:
           - os: ubuntu-latest
-            asset: linux-x86_64-${{ env.VERSION }}
+            asset: "linux-x86_64-${{ env.VERSION }}"
             build-path: build/x86_64-unknown-linux-gnu/release/install/t
     runs-on: ${{ matrix.os }}
     steps:
@@ -59,8 +60,6 @@ jobs:
           if-no-files-found: error
           retention-days: 1
   release:
-    env:
-      VERSION: v${{ env.GITHUB_RUN_NUMBER }}
     runs-on: ubuntu-latest
     needs:
       - build-linux
