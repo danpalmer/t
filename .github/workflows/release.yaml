@@ -5,7 +5,13 @@ on:
     branches: [main]
 
 jobs:
-  build-linux:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset: linux-x86_64-v${{ env.GITHUB_RUN_NUMBER }}
+            build-path: build/x86_64-unknown-linux-gnu/release/install/t
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -46,8 +52,8 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v2.2.3
         with:
-          name: "linux-x86_64-v${{ env.GITHUB_RUN_NUMBER }}"
-          path: build/x86_64-unknown-linux-gnu/release/install/t
+          name: ${{ matrix.asset }}
+          path: ${{ matrix.build-path }}
           if-no-files-found: error
           retention-days: 1
   release:
