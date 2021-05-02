@@ -22,7 +22,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2.2.2
         with:
-          # See https://github.com/indygreg/python-build-standalone/releases
+          # Canonical definition of the version of Python that will be used
+          # for the tool inside the Rust container. Must be a version available
+          # at <https://github.com/indygreg/python-build-standalone/releases>.
           python-version: 3.8.9
       - uses: actions/cache@v2
         with:
@@ -31,7 +33,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: Install PyOxidizer
-        run: cargo install --git https://github.com/indygreg/PyOxidizer.git --branch main pyoxidizer
+        run: |
+          # Use the main branch as it has unreleased features. PyOxidizer aims
+          # to maintain strong backwards compatibility and stability on the
+          # main branch.
+          cargo install \
+            --git https://github.com/indygreg/PyOxidizer.git \
+            --branch main \
+            pyoxidizer
       - name: Build
         run: VERSION=$GITHUB_RUN_NUMBER pyoxidizer build --release
       - name: Upload build
