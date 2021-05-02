@@ -4,16 +4,13 @@ on:
   push:
     branches: [main]
 
-env:
-  VERSION: "v${{ env.GITHUB_RUN_NUMBER }}"
-
 jobs:
   build:
     strategy:
       matrix:
         include:
           - os: ubuntu-latest
-            asset: "linux-x86_64-${{ env.VERSION }}"
+            asset: linux-x86_64
             build-path: build/x86_64-unknown-linux-gnu/release/install/t
     runs-on: ${{ matrix.os }}
     steps:
@@ -51,7 +48,7 @@ jobs:
             --branch main \
             pyoxidizer
       - name: Build
-        run: pyoxidizer build --release
+        run: VERSION="v${{ github.run_number }}" pyoxidizer build --release
       - name: Upload build
         uses: actions/upload-artifact@v2.2.3
         with:
@@ -69,18 +66,18 @@ jobs:
       - name: Download linux build
         uses: actions/download-artifact@v2.0.9
         with:
-          name: "linux-x86_64-${{ env.VERSION }}"
+          name: linux-x86_64
       - name: Tag release
         run: |
-          git tag $VERSION
+          git tag v${{ github.run_number }}
           git push --tags
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: Release ${{ env.VERSION }}
+          name: Release v${{ github.run_number }}
           prerelease: true
-          tag_name: ${{ env.VERSION }}
+          tag_name: v${{ github.run_number }}
           files: |
-            linux-x86_64-${{ env.VERSION }}
+            linux-x86_64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
