@@ -71,13 +71,15 @@ jobs:
         run: |
           git tag v${{ github.run_number }}
           git push --tags
+      - name: Zip Releases
+        run: |
+          tar -czvf linux-x86_64.tar.gz linux-x86_64
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           name: Release v${{ github.run_number }}
           prerelease: true
           tag_name: v${{ github.run_number }}
-          files: |
-            linux-x86_64
+          files: "*.tar.gz"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
