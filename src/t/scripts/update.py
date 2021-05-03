@@ -110,10 +110,10 @@ def get_update(releases):
     latest_release = releases[0]
     new_version = int(latest_release.tag_name[1:])
 
-    try:
-        current_version = int(VERSION)
-    except ValueError:
+    if VERSION == "dev":
         current_version = -1
+    else:
+        current_version = int(VERSION[1:])
 
     if new_version <= current_version:
         return None
