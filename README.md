@@ -1,38 +1,92 @@
-⚠️Warning: Experimental⚠️
+# t – an engineering user interface
 
-This is liable to change and is full of half baked ideas.
+`t` is a template for creating an _organisation specific_ infrastructure tool.
+Have you ever:
 
-# t – an interface to Thread
+- Copy/pasted commands around to achieve tasks like getting a production
+  shell or exporting some data.
+- Searched your shell history, or Slack history, for the right incantation to
+  scale a cluster.
+- Written or read a [runbook](https://en.wikipedia.org/wiki/Runbook) and wished
+  there was a good place to put a script for the process.
 
-The `t` tool defines the canonical ways to achieve various tasks in Thread's
-infrastructure and systems.
+If you've done any of these it may be worth creating a tool for your
+organisation that engineers can use to run automations and processes. Knowledge
+will be kept in code rather than in chat histories, processes can be updated in
+version control rather than in document edit history.
 
-`t` is designed for humans, not for computers. Interfaces should be easy to use
-and `t` should always run on a development machine.
+## Getting started
 
-### How it works
+1. Click "Use this template" at the top of the repo on GitHub.
+2. Set up your new repo, it's fine to make it private.
+3. Rename to suit your team, we use `t` for `tool`/`template`/`thread`, but
+   anything short will probably work well.
+4. Start adding scripts to `src/t/scripts`. Any commands in files there will be
+   picked up and added to the command line interface (we use
+   [click](https://palletsprojects.com/p/click/) for the CLI).
+5. Push to GitHub and let Actions build you a new version.
+6. Hack `t` into what you need it to be. Swap out Actions for a different CI
+   provider, Releases for a different distribution channel, change anything that
+   will make `t` more useful for your team.
 
-##### PyOxidizer
+## What is `t`?
 
-`t` is a PyOxidizer project. That means there are some things to bear in mind.
-The advantage of this is that we get a single static binary that has no runtime
-dependencies on virtualenvs, Python versions, etc, but we do need a Rust
-toolchain to compile it and there are some limitations to how it runs as all
-files have to be embedded and Python versions availability is limited.
+`t` is a _template_ for this tool. It's designed to be forked, renamed, and
+hacked to suit your team. Think of it as a starting point and some guidelines to
+bootstrap some decision making and solve some of the early problems.
 
-##### Click
+`t` is opinionated about a few things, specifically:
 
-We use the `click` library to structure the CLI and as the backbone of the tool.
-`click` normalises certain aspects of CLI development (e.g. providing `--help`,
-normalising command names to `dash-case`), and provides a number of utilities.
-Things like user prompts, colourised output, progress bars, are all included in
-the library and work well together.
+- That this engineering tool should be usable anywhere. `t` provides a static,
+  relocatable binary that doesn't have any system dependencies beyond the OS.
+- That the scripting should be done in Python. Python has libraries for almost
+  everything, it's easily hackable to do most things, and it's quite high-level.
+- That updates should be frequent and easy to apply. The tool should change as
+  rapidly as necessary and the build process should support this.
 
-##### Updates
+## Best practices for using `t`
 
-TODO: How do updates work?
+- Use `t` as a user interface, not a programmatic interface. Tools used by
+  automated systems have different needs. `t` should prioritise human needs.
+- Access production, but don't run in production. Breaking `t` should be an
+  inconvenience not an outage.
+- Rapidly iterate. Because `t` isn`t used in production it's safe to "move fast
+  and break things".
+- Don't over-automate. If a utility in `t` needs credentials for another system
+  just check for them and bail out if they're not there, don't try to solve for
+  every case.
 
-### Development
+## Why is `t` a template?
+
+Because `t` uses PyOxidizer and provides a basic Continuous Integration, build,
+and deployment process, it's not feasible to ship as a library. Plus, we'd
+rather users took it as a starting point and hacked it into what they need than
+tried to keep their codebases up to date with a changing framework.
+
+---
+
+## How it works
+
+#### PyOxidizer
+
+`t` uses [PyOxidizer](https://github.com/indygreg/PyOxidizer) to package up a
+Python codebase and all of its dependencies into a static binary that can be
+trivially installed on most development machines (currently Linux and macOS).
+
+#### Click
+
+`t` uses the `click` library to structure the CLI and as the backbone of the
+tool. `click` normalises certain aspects of CLI development (e.g. providing
+`--help`, normalising command names to `dash-case`), and provides a number of
+utilities. Things like user prompts, colourised output, progress bars, are all
+included in the library and work well together.
+
+#### Updates
+
+Updates are built with GitHub Actions and uploaded as a GitHub Release once
+complete. `t` is able to check for available updates and update itself.
+
+#### Development
 
 ```shell
 # to run for development
@@ -42,6 +96,21 @@ t
 # to run as it would in real-world use
 pyoxidizer run
 
-# to build
+# to build for release
 pyoxidizer build --release
 ```
+
+---
+
+## Contributing
+
+As this is a template for others to create tools, contributions will be accepted
+based on how generally applicable they are to all. For example:
+
+- Windows build support would be welcomed!
+- A set of utilities for reading/writing configuration that could be re-used
+  between many scripts would be welcomed.
+- A script for archiving a directory to S3 would likely be too user-specific,
+  and would not.
+
+If you're unsure, start a discussion and ask!
