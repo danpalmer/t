@@ -3,3 +3,4 @@
 
 black
 ipdb
+pip-compile-multi
