@@ -12,7 +12,7 @@ from t.settings import UPDATE_REPO
 from t.utils import github, output
 
 
-@cli.command()
+@cli.command(help=f"Check {'/'.join(UPDATE_REPO)} for updates")
 def check_for_update():
     releases = get_available_releases()
     if not releases:
@@ -32,7 +32,7 @@ def check_for_update():
     output.default("  Update with `t self-update` or download manually")
 
 
-@cli.command()
+@cli.command(help=f"Update to the latest release from {'/'.join(UPDATE_REPO)}")
 @click.option(
     "--path",
     type=pathlib.Path,
