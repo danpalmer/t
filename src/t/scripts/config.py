@@ -1,7 +1,7 @@
 import click
 
 from t import cli
-from t.utils import github
+from t.utils import github, output
 
 
 @cli.group(help="Configuration for t")
@@ -15,4 +15,4 @@ def github_login(force):
     if force or not github.check_authentication():
         github.authenticate()
     else:
-        click.secho("Already logged in to GitHub")
+        output.default("Already logged in to GitHub")

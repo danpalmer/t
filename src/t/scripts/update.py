@@ -9,30 +9,27 @@ import httpx
 from t import cli
 from t.__version__ import VERSION
 from t.settings import UPDATE_REPO
-from t.utils import github
+from t.utils import github, output
 
 
 @cli.command()
 def check_for_update():
     releases = get_available_releases()
     if not releases:
-        click.secho("No releases found", fg="red", bold=True)
-        sys.exit(1)
+        output.fatal("No releases found")
 
     update = get_update(releases)
     if not update:
-        click.echo("No update available")
-        sys.exit(0)
+        output.default("No update available", exit_with_code=0)
 
     try:
         asset = get_asset(update)
     except UnsupportedPlatform as e:
-        click.secho(str(e), fg="red", bold=True)
-        sys.exit(1)
+        output.fatal(str(e))
 
-    click.secho("New version found", fg="green")
-    click.echo(f"  {VERSION} => {update.tag_name} {asset.browser_download_url}")
-    click.echo("  Update with `t self-update` or download manually")
+    output.success("New version found")
+    output.default(f"  {VERSION} => {update.tag_name} {asset.browser_download_url}")
+    output.default("  Update with `t self-update` or download manually")
 
 
 @cli.command()
@@ -44,35 +41,27 @@ def check_for_update():
 )
 def self_update(path: pathlib.Path) -> None:
     if "python" in path.name:
-        click.secho("Aborting update!", fg="red", bold=True)
-        click.echo("It looks like you're running in development mode.")
-        sys.exit(1)
+        output.fatal("Aborting update! (Looks like your in dev mode)")
 
     if not click.confirm(f"This will update the binary at {path}"):
-        click.secho("Aborting update!", fg="red", bold=True)
-        sys.exit(1)
+        output.fatal("Aborting update!")
 
     releases = get_available_releases()
     if not releases:
-        click.secho("No releases found", fg="red", bold=True)
-        sys.exit(1)
+        output.fatal("No releases found")
 
     update = get_update(releases)
     if not update:
-        click.echo("No update available")
-        sys.exit(0)
+        output.default("No update available", exit_with_code=0)
 
     try:
         asset = get_asset(update)
     except UnsupportedPlatform as e:
-        click.secho(str(e), fg="red", bold=True)
-        sys.exit(1)
+        output.fatal(str(e))
 
     github_client = github.get_authenticated_client()
 
     with path.open("wb") as f:
-        click.echo(f"Downloading {asset.url}")
-
         with httpx.stream(
             "GET",
             asset.url,
@@ -93,7 +82,11 @@ def self_update(path: pathlib.Path) -> None:
 
 def get_available_releases():
     gh = github.get_authenticated_client()
-    return gh.repos.list_releases(*UPDATE_REPO)
+
+    try:
+        return gh.repos.list_releases(*UPDATE_REPO)
+    except Exception:
+        output.fatal("Failed to get releases, have you run `config github-login`?")
 
 
 def get_update(releases):
