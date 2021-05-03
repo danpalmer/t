@@ -100,6 +100,29 @@ pyoxidizer run
 pyoxidizer build --release
 ```
 
+This project uses
+[pip-compile-multi](https://pypi.org/project/pip-compile-multi/) for
+hard-pinning dependencies versions. Please see its documentation for usage
+instructions.
+
+In short, `requirements/base/run.in` and `check.in` contain the list of direct
+requirements necessary for running and validating the codebase. The
+`app.in`/`ci.in`/`dev.in` files are for each use-case – running, CI, and
+development, and pull in from the base files. The `txt` files are automatically
+generated from the `in` files by adding recursive tree of dependencies with
+fixed versions.
+
+To upgrade dependency versions, run `pip-compile-multi`.
+
+To add a new dependency without upgrade, add it to the right file, probably in
+`base` and run `pip-compile-multi --no-upgrade`.
+
+For installation always use `.txt` files. For example, command
+`pip install -Ue . -r requirements/dev.txt` will install this project in
+development mode, with testing requirements and development tools. Another
+useful command is `pip-sync requirements/dev.txt`, it uninstalls packages from
+your virtualenv that aren't listed in the file.
+
 ---
 
 ## Contributing

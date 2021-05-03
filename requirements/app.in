@@ -1,4 +1,1 @@
-click
-ghapi
-httpx
-tinynetrc
+-r base/run.in

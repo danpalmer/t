@@ -1,4 +1,5 @@
--r ci.in
+-r base/run.in
+-r base/check.in
 
 black
 ipdb
