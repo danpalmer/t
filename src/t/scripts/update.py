@@ -111,13 +111,13 @@ def get_update(releases):
 
 
 def get_asset(release):
-    rust_triple = get_platform_name()
+    platform = get_platform_name()
     try:
-        return next(x for x in release.assets if x.name.startswith(rust_triple))
+        return next(x for x in release.assets if x.name.startswith(platform))
     except StopIteration:
         raise UnsupportedPlatform(
             f"No compatible asset found on release '{release.name}' "
-            f"for platform {rust_triple}",
+            f"for platform {platform}",
         )
 
 
