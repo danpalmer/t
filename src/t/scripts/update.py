@@ -1,9 +1,9 @@
-import io
 import pathlib
 import platform
 import stat
 import sys
 import tarfile
+import tempfile
 
 import click
 import httpx
@@ -63,25 +63,26 @@ def self_update(path: pathlib.Path) -> None:
 
     github_client = github.get_authenticated_client()
 
-    with io.BytesIO() as data:
-        with httpx.stream(
-            "GET",
-            asset.url,
-            headers={
-                **github_client.headers,
-                "User-Agent": "t",
-                "Accept": "application/octet-stream",
-            },
-        ) as response:
-            response.raise_for_status()
+    with tempfile.TemporaryDirectory() as tempdir:
+        temp_asset_path = pathlib.Path(tempdir) / asset.name
 
-            with click.progressbar(response.iter_bytes()) as bar:
-                for chunk in bar:
-                    data.write(chunk)
+        with temp_asset_path.open("wb") as f:
+            with httpx.stream(
+                "GET",
+                asset.url,
+                headers={
+                    **github_client.headers,
+                    "User-Agent": "t",
+                    "Accept": "application/octet-stream",
+                },
+            ) as response:
+                response.raise_for_status()
 
-        data.seek(0)
+                with click.progressbar(response.iter_bytes()) as bar:
+                    for chunk in bar:
+                        f.write(chunk)
 
-        tar = tarfile.open(fileobj=data)
+        tar = tarfile.open(temp_asset_path)
         tar_members = tar.getmembers()
         if not tar_members:
             output.fatal("No items in release archive")
