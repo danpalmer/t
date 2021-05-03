@@ -9,14 +9,10 @@ def config():
     pass
 
 
-@config.command(help="Check configuration setup")
-def check():
-    if not github.check_authentication():
-        click.secho("Missing GitHub token", fg="red")
-    else:
-        click.secho("GitHub token set")
-
-
 @config.command(help="Sign in to GitHub to enable related features")
-def github_login():
-    github.authenticate()
+@click.option('--force', is_flag=True, help="Force sign in even if credentials exist.")
+def github_login(force):
+    if force or not github.check_authentication():
+        github.authenticate()
+    else:
+        click.secho("Already logged in to GitHub")
