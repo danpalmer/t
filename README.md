@@ -30,6 +30,8 @@ version control rather than in document edit history.
 6. Hack `t` into what you need it to be. Swap out Actions for a different CI
    provider, Releases for a different distribution channel, change anything that
    will make `t` more useful for your team.
+7. Have your team install `t` by downloading the latest release and putting it
+   on their `PATH`.
 
 ## What is `t`?
 
