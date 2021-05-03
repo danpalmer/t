@@ -95,7 +95,7 @@ complete. `t` is able to check for available updates and update itself.
 ```shell
 # to run for development
 pip install -e .
-t
+t-dev --help
 
 # to run as it would in real-world use
 pyoxidizer run

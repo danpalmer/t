@@ -26,7 +26,7 @@ setup(
         "License :: Other/Proprietary License",
         "Private :: Do not Upload",
     ],
-    entry_points={"console_scripts": ["t=t.__main__:main"]},
+    entry_points={"console_scripts": ["t-dev=t.__main__:main"]},
 )
 
 if os.environ.get("PYOXIDIZER") is not None:
