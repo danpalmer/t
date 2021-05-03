@@ -1,7 +1,9 @@
+import io
 import pathlib
 import platform
 import stat
 import sys
+import tarfile
 
 import click
 import httpx
@@ -61,7 +63,7 @@ def self_update(path: pathlib.Path) -> None:
 
     github_client = github.get_authenticated_client()
 
-    with path.open("wb") as f:
+    with io.BytesIO() as data:
         with httpx.stream(
             "GET",
             asset.url,
@@ -75,9 +77,23 @@ def self_update(path: pathlib.Path) -> None:
 
             with click.progressbar(response.iter_bytes()) as bar:
                 for chunk in bar:
-                    f.write(chunk)
+                    data.write(chunk)
 
-    path.chmod(stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+        data.seek(0)
+
+        tar = tarfile.open(fileobj=data)
+        tar_members = tar.getmembers()
+        if not tar_members:
+            output.fatal("No items in release archive")
+            return
+
+        binary_contents = tar.extractfile(tar_members[0].name)
+        if binary_contents is None:
+            output.fatal("Could not extract 't' from release archive")
+            return
+
+        path.write_bytes(binary_contents.read())
+        path.chmod(stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
 
 
 def get_available_releases():
