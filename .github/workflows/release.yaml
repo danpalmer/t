@@ -27,6 +27,8 @@ jobs:
         run: black src
       - name: Lint
         run: flake8 src --jobs=auto
+      - name: Validate dependencies
+        run: pip-compile-multi verify
   build:
     needs:
       - check
