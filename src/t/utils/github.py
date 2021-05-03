@@ -2,21 +2,14 @@ import click
 import tinynetrc
 from ghapi.all import GhApi, GhDeviceAuth
 
-CLIENT_ID = "8db636a6ea034b12a053"
-SCOPES = (
-    "repo",
-    "workflow",
-    # "admin:org",
-    # "gist",
-    # "read:user",
-)
+from t.settings import GITHUB_CLIENT_ID, GITHUB_SCOPES
 
 # Doesn't actually matter, we just store against this locally
 GITHUB_HOST = "api.github.com"
 
 
 def authenticate() -> None:
-    auth = GhDeviceAuth(CLIENT_ID, *SCOPES)
+    auth = GhDeviceAuth(GITHUB_CLIENT_ID, *GITHUB_SCOPES)
     click.prompt(
         f"Authenticate on GitHub with the code: {auth.user_code}\n"
         "Press enter to continue...",

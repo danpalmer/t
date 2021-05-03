@@ -19,7 +19,8 @@ version control rather than in document edit history.
 
 1. Click "Use this template" at the top of the repo on GitHub.
 2. Set up your new repo, it's fine to make it private. Set this in
-   `src/t/__init__.py` so that updates work.
+   `src/t/settings.py` so that updates work, and add a GitHub client ID if you
+   want.
 3. Rename to suit your team, we use `t` for `tool`/`template`/`thread`, but
    anything short will probably work well.
 4. Start adding scripts to `src/t/scripts`. Any commands in files there will be

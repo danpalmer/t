@@ -6,8 +6,9 @@ import sys
 import click
 import httpx
 
-from t import REPO, cli
+from t import cli
 from t.__version__ import VERSION
+from t.settings import UPDATE_REPO
 from t.utils import github
 
 
@@ -92,7 +93,7 @@ def self_update(path: pathlib.Path) -> None:
 
 def get_available_releases():
     gh = github.get_authenticated_client()
-    return gh.repos.list_releases(*REPO)
+    return gh.repos.list_releases(*UPDATE_REPO)
 
 
 def get_update(releases):
