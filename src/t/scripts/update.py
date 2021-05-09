@@ -105,12 +105,10 @@ def self_update(path: pathlib.Path, repo: Tuple[str, str], force: bool) -> None:
         tar_members = tar.getmembers()
         if not tar_members:
             output.fatal("No items in release archive")
-            return
 
         binary_contents = tar.extractfile(tar_members[0].name)
         if binary_contents is None:
             output.fatal("Could not extract 't' from release archive")
-            return
 
         path.write_bytes(binary_contents.read())
         path.chmod(stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
