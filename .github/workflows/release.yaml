@@ -127,7 +127,7 @@ jobs:
         with:
           name: Release v${{ github.run_number }}
           body: This is an incremental release and is available for self-update.
-          prerelease: true
+          prerelease: false
           tag_name: v${{ github.run_number }}
           files: "*.tar.gz"
         env:
