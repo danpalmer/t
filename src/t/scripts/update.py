@@ -4,6 +4,7 @@ import stat
 import sys
 import tarfile
 import tempfile
+from typing import Any, List, Tuple
 
 import click
 import httpx
@@ -15,8 +16,14 @@ from t.utils import github, output
 
 
 @cli.command(help=f"Check {'/'.join(UPDATE_REPO)} for updates")
-def check_for_update():
-    releases = get_available_releases()
+@click.option(
+    "--repo",
+    type=(str, str),
+    metavar=" ".join(UPDATE_REPO),
+    default=UPDATE_REPO,
+)
+def check_for_update(repo: Tuple[str, str]) -> None:
+    releases = get_available_releases(repo)
     if not releases:
         output.fatal("No releases found")
 
@@ -41,18 +48,30 @@ def check_for_update():
     default=pathlib.Path(sys.executable),
     help="Override install path",
 )
-def self_update(path: pathlib.Path) -> None:
+@click.option(
+    "--repo",
+    type=(str, str),
+    metavar=" ".join(UPDATE_REPO),
+    default=UPDATE_REPO,
+)
+@click.option(
+    "--force",
+    is_flag=True,
+    help="Update to latest regardless of version",
+)
+def self_update(path: pathlib.Path, repo: Tuple[str, str], force: bool) -> None:
     if "python" in path.name:
         output.fatal("Aborting update! (Looks like your in dev mode)")
 
-    if not click.confirm(f"This will update the binary at {path}"):
-        output.fatal("Aborting update!")
+    output.default(f"Updating {path} from {'/'.join(repo)}")
+    if not click.confirm("Continue?"):
+        output.fatal("Aborting update")
 
-    releases = get_available_releases()
+    releases = get_available_releases(repo)
     if not releases:
         output.fatal("No releases found")
 
-    update = get_update(releases)
+    update = get_update(releases, force=force)
     if not update:
         output.default("No update available", exit_with_code=0)
 
@@ -97,17 +116,20 @@ def self_update(path: pathlib.Path) -> None:
         path.chmod(stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
 
 
-def get_available_releases():
+def get_available_releases(repo: Tuple[str, str]) -> List[Any]:
     gh = github.get_authenticated_client()
 
     try:
-        return gh.repos.list_releases(*UPDATE_REPO)
+        return gh.repos.list_releases(*repo)
     except Exception:
         output.fatal("Failed to get releases, have you run `config github-login`?")
 
 
-def get_update(releases):
+def get_update(releases: List[Any], force=False) -> Any:
     latest_release = releases[0]
+    if force:
+        return latest_release
+
     new_version = int(latest_release.tag_name[1:])
 
     if VERSION == "dev":
@@ -121,7 +143,7 @@ def get_update(releases):
     return latest_release
 
 
-def get_asset(release):
+def get_asset(release: Any) -> Any:
     platform = get_platform_name()
     try:
         return next(x for x in release.assets if x.name.startswith(platform))
@@ -132,7 +154,7 @@ def get_asset(release):
         )
 
 
-def get_platform_name():
+def get_platform_name() -> str:
     if sys.platform.startswith("darwin"):
         if platform.machine() == "arm64":
             return "macos-arm64"
