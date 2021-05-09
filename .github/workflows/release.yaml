@@ -3,6 +3,11 @@ name: Release
 on:
   push:
     branches: [main]
+    paths:
+      - setup.py
+      - pyoxidizer.bzl
+      - src/**/*
+      - .github/workflows/release.yaml
 
 jobs:
   check:
