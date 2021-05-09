@@ -4,6 +4,8 @@ def make_dist():
 
 def make_exe(dist):
     policy = dist.make_python_packaging_policy()
+    policy.resources_location = "in-memory"
+    policy.include_file_resources = True
 
     python_config = dist.make_python_interpreter_config()
     python_config.run_command = """import t; t.main()"""

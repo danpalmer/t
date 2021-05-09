@@ -20,6 +20,8 @@ setup(
     url="https://github.com/thread/t",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    package_data={"t": ["src/t/resources/**/*"]},
+    include_package_data=True,
     zip_safe=False,
     classifiers=[
         "Programming Language :: Python :: 3.9",
