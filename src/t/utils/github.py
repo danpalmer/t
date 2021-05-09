@@ -1,3 +1,5 @@
+import base64
+
 import click
 import tinynetrc
 from ghapi.all import GhApi, GhDeviceAuth
@@ -38,3 +40,11 @@ def check_authentication() -> bool:
     netrc = tinynetrc.Netrc()
     github = netrc.get(GITHUB_HOST)
     return github.get("login") and github.get("password")
+
+
+def get_file_contents(owner, repo, path, ref):
+    gh = get_authenticated_client()
+    file_data = gh.repos.get_content(owner, repo, path, ref)
+    if file_data.encoding != "base64":
+        raise ValueError(f"Unsupported encoding {file_data.encoding}")
+    return base64.b64decode(file_data.content).decode("utf-8")
