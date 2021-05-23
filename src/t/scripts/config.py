@@ -16,3 +16,12 @@ def github_login(force):
         github.authenticate()
     else:
         output.default("Already logged in to GitHub")
+
+
+@config.command(help="Check for the status of various configuration options")
+def check():
+    for system, check_fn in (("GitHub", github.check_authentication),):
+        if check_fn():
+            output.success(f"{system}: ok")
+        else:
+            output.error(f"{system}: not configured")
