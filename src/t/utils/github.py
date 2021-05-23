@@ -1,13 +1,10 @@
 import base64
 
 import click
-import tinynetrc
 from ghapi.all import GhApi, GhDeviceAuth
 
 from t.settings import GITHUB_CLIENT_ID, GITHUB_SCOPES
-
-# Doesn't actually matter, we just store against this locally
-GITHUB_HOST = "api.github.com"
+from t.utils.config import get_config, update_config
 
 
 def authenticate() -> None:
@@ -23,22 +20,20 @@ def authenticate() -> None:
     token = auth.wait()
     api = GhApi(token=token)
     user = api.users.get_authenticated()
-    netrc = tinynetrc.Netrc()
-    netrc[GITHUB_HOST] = {
-        "login": user.login,
-        "password": token,
-    }
-    netrc.save()
+
+    with update_config() as config:
+        config["github"] = {
+            "login": user.login,
+            "password": token,
+        }
 
 
 def get_authenticated_client() -> GhApi:
-    netrc = tinynetrc.Netrc()
-    return GhApi(token=netrc[GITHUB_HOST]["password"])
+    return GhApi(token=get_config()["github"]["password"])
 
 
 def check_authentication() -> bool:
-    netrc = tinynetrc.Netrc()
-    github = netrc.get(GITHUB_HOST)
+    github = get_config().get("github", {})
     return github.get("login") and github.get("password")
 
 
