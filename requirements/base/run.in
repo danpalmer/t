@@ -2,3 +2,4 @@ click
 git+https://github.com/fastai/ghapi.git@4795c3b7b77ef6e29fd663f741d8c09b211b7a55 # Until >0.1.15 is released
 httpx
 tinynetrc
+xdg
